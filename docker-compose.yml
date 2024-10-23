@@ -1,0 +1,37 @@
+version: '3.3'
+
+services:
+  scrumvoting_database:
+    container_name: scrumvoting_database
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: scrumvoting_database
+      MYSQL_USER: scrumvoting
+      MYSQL_PASSWORD: scrumvoting
+    ports:
+      - '4307:3306'
+    volumes:
+      - ./.docker/scrumvoting/mysql:/var/lib/mysql
+  scrumvoting_app:
+    container_name: scrumvoting_app
+    build:
+      context: ./.docker/scrumvoting
+    ports:
+      - '9000:9000'
+    volumes:
+      - ./:/var/www/scrumvoting
+    depends_on:
+      - scrumvoting_database
+  scrumvoting_database_nginx:
+    container_name: scrumvoting_database_nginx
+    image: nginx:stable-alpine
+    ports:
+      - '8080:80'
+    volumes:
+      - ./:/var/www/scrumvoting
+      - ./.docker/scrumvoting/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - scrumvoting_app
+      - scrumvoting_database
