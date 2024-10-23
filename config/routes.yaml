@@ -1,0 +1,5 @@
+voting_controllers:
+    resource:
+        path: ../src/Context/Voting/Infrastructure/Controller/
+        namespace: App\Context\Voting\Infrastructure\Controller
+    type: attribute
